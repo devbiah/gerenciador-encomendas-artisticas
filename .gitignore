@@ -1,3 +1,19 @@
+# Ambiente virtual
+.venv/
+
+# Arquivos Python
+__pycache__/
+*.py[cod]
+
+# Variáveis de ambiente
+.env
+
+# Testes
+.pytest_cache/
+
+# Configurações locais
+.vscode/
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[codz]
