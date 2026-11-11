@@ -1,4 +1,3 @@
-
 import os
 from flask import Flask, request, session, redirect, url_for
 from flask_sqlalchemy import SQLAlchemy
@@ -12,8 +11,12 @@ db = SQLAlchemy()
 def create_app():
     app = Flask(__name__)
 
-    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY")
-    app.config["SQLALCHEMY_DATABASE_URI"] = os.getenv("DATABASE_URL")
+    os.makedirs(app.instance_path, exist_ok=True)
+
+    app.config["SECRET_KEY"] = os.getenv("SECRET_KEY") or "chave-local-apenas-desenvolvimento"
+    app.config["SQLALCHEMY_DATABASE_URI"] = (
+        os.getenv("DATABASE_URL") or "sqlite:///" + os.path.join(app.instance_path, "comissiona.db")
+    )
     app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
     app.config["MAX_CONTENT_LENGTH"] = 16 * 1024 * 1024
 
@@ -31,6 +34,9 @@ def create_app():
     app.register_blueprint(encomendas)
     app.register_blueprint(pagamentos)
     app.register_blueprint(auth)
+
+    with app.app_context():
+        db.create_all()
 
     @app.before_request
     def exigir_login():
