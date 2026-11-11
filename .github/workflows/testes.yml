@@ -29,5 +29,10 @@ jobs:
           python -m pip install Flask Flask-SQLAlchemy SQLAlchemy python-dotenv
           python -m pip install -r requirements.txt
 
+      - name: Verificar dependencias
+        run: |
+          python -m pip show python-dotenv
+          python -m pip show SQLAlchemy
+
       - name: Executar testes
         run: python testar_comissiona.py
