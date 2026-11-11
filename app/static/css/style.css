@@ -1237,3 +1237,305 @@ table td:last-child .table-actions {
     font-size: 10px;
     white-space: nowrap;
 }
+
+/* ========================================
+   ACESSIBILIDADE — MODO DE ALTO CONTRASTE
+======================================== */
+
+.contrast-toggle {
+    position: fixed;
+    top: 14px;
+    right: 18px;
+    z-index: 9999;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 38px;
+    padding: 9px 14px;
+    border: 2px solid #202b45;
+    border-radius: 7px;
+    color: #ffffff;
+    background: #202b45;
+    font-family: inherit;
+    font-size: 11px;
+    font-weight: 700;
+    cursor: pointer;
+}
+
+.contrast-toggle:hover {
+    background: #303b59;
+}
+
+.contrast-toggle:focus-visible {
+    outline: 3px solid #e0a800;
+    outline-offset: 3px;
+}
+
+/* CORES DO MODO DE ALTO CONTRASTE */
+
+body.high-contrast {
+    color: #ffffff !important;
+    background: #000000 !important;
+}
+
+body.high-contrast .app-container,
+body.high-contrast .main-content,
+body.high-contrast .page-content,
+body.high-contrast .auth-layout,
+body.high-contrast .auth-right {
+    color: #ffffff !important;
+    background: #000000 !important;
+}
+
+body.high-contrast .sidebar,
+body.high-contrast .auth-left {
+    color: #ffffff !important;
+    background: #111111 !important;
+    border-right: 2px solid #ffffff;
+}
+
+body.high-contrast .sidebar-help,
+body.high-contrast .auth-work-card {
+    background: #222222 !important;
+    border: 1px solid #ffffff;
+}
+
+/* TEXTOS */
+
+body.high-contrast h1,
+body.high-contrast h2,
+body.high-contrast h3,
+body.high-contrast h4,
+body.high-contrast p,
+body.high-contrast span,
+body.high-contrast label,
+body.high-contrast strong,
+body.high-contrast small,
+body.high-contrast td,
+body.high-contrast th,
+body.high-contrast .page-header h1,
+body.high-contrast .section-header h2,
+body.high-contrast .dashboard-card h3,
+body.high-contrast .stat-card strong,
+body.high-contrast .form-group label,
+body.high-contrast .auth-form-container h1,
+body.high-contrast .auth-form-container label,
+body.high-contrast .auth-presentation h2 {
+    color: #ffffff !important;
+}
+
+/* CARTÕES E ÁREAS DE CONTEÚDO */
+
+body.high-contrast .content-card,
+body.high-contrast .dashboard-card,
+body.high-contrast .stat-card,
+body.high-contrast .form-card {
+    color: #ffffff !important;
+    background: #111111 !important;
+    border: 1px solid #ffffff !important;
+    box-shadow: none !important;
+}
+
+body.high-contrast tbody tr:hover {
+    background: #292929 !important;
+}
+
+/* LINKS E NAVEGAÇÃO */
+
+body.high-contrast a {
+    color: #ffff00 !important;
+    text-decoration: underline;
+}
+
+body.high-contrast .sidebar-nav a,
+body.high-contrast .sidebar-logout {
+    color: #ffffff !important;
+    text-decoration: none;
+}
+
+body.high-contrast .sidebar-nav a.active {
+    color: #000000 !important;
+    background: #ffff00 !important;
+}
+
+body.high-contrast .sidebar-nav a.active span {
+    color: #000000 !important;
+}
+
+body.high-contrast .sidebar-nav a:hover,
+body.high-contrast .sidebar-logout:hover {
+    color: #ffff00 !important;
+    background: #333333 !important;
+}
+
+/* BOTÕES */
+
+body.high-contrast .btn-primary,
+body.high-contrast .dashboard-card a,
+body.high-contrast .auth-button,
+body.high-contrast .page-content form button:not(.btn-danger) {
+    color: #000000 !important;
+    background: #ffff00 !important;
+    border: 2px solid #ffff00 !important;
+    font-weight: 800;
+}
+
+body.high-contrast .btn-secondary,
+body.high-contrast .btn-table-action.btn-secondary {
+    color: #ffffff !important;
+    background: #222222 !important;
+    border: 2px solid #ffffff !important;
+}
+
+body.high-contrast .btn-danger,
+body.high-contrast .btn-table-action.btn-danger {
+    color: #ffffff !important;
+    background: #5c0000 !important;
+    border: 2px solid #ff7777 !important;
+}
+
+/* CAMPOS E FORMULÁRIOS */
+
+body.high-contrast input,
+body.high-contrast select,
+body.high-contrast textarea,
+body.high-contrast .auth-form-container input {
+    color: #ffffff !important;
+    background: #000000 !important;
+    border: 2px solid #ffffff !important;
+}
+
+body.high-contrast input::placeholder,
+body.high-contrast textarea::placeholder {
+    color: #dddddd !important;
+}
+
+body.high-contrast input:focus,
+body.high-contrast select:focus,
+body.high-contrast textarea:focus {
+    outline: 3px solid #ffff00 !important;
+    outline-offset: 2px;
+    border-color: #ffff00 !important;
+    box-shadow: none !important;
+}
+
+/* TABELAS */
+
+body.high-contrast table,
+body.high-contrast thead,
+body.high-contrast tbody,
+body.high-contrast tr,
+body.high-contrast th,
+body.high-contrast td {
+    color: #ffffff !important;
+    border-color: #ffffff !important;
+}
+
+body.high-contrast .table-secondary,
+body.high-contrast .table-footer,
+body.high-contrast .no-references {
+    color: #dddddd !important;
+}
+
+/* STATUS */
+
+body.high-contrast .status-badge {
+    color: #000000 !important;
+    background: #ffff00 !important;
+    border: 1px solid #ffffff;
+}
+
+body.high-contrast .status-badge * {
+    color: #000000 !important;
+}
+
+/* MENSAGENS E ELEMENTOS COMPLEMENTARES */
+
+body.high-contrast .auth-message.success,
+body.high-contrast .auth-message.error,
+body.high-contrast .senha-aviso {
+    color: #ffffff !important;
+    background: #222222 !important;
+    border: 2px solid #ffff00 !important;
+}
+
+body.high-contrast .senha-aviso *,
+body.high-contrast .auth-message * {
+    color: #ffffff !important;
+}
+
+/* FOCO VISÍVEL PARA TECLADO */
+
+body.high-contrast a:focus-visible,
+body.high-contrast button:focus-visible,
+body.high-contrast input:focus-visible,
+body.high-contrast select:focus-visible,
+body.high-contrast textarea:focus-visible {
+    outline: 3px solid #ffff00 !important;
+    outline-offset: 3px;
+}
+
+/* BOTÃO DE ACESSIBILIDADE ATIVADO */
+
+body.high-contrast .contrast-toggle {
+    color: #000000 !important;
+    background: #ffff00 !important;
+    border: 2px solid #ffffff !important;
+}
+
+/* ========================================
+   ACESSIBILIDADE — BOTÃO FIXO
+======================================== */
+
+.contrast-toggle {
+    position: fixed !important;
+    top: auto !important;
+    right: 18px !important;
+    bottom: 18px !important;
+    left: auto !important;
+    z-index: 99999;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    min-height: 40px;
+    padding: 10px 15px;
+
+    border: 2px solid #202b45;
+    border-radius: 8px;
+
+    color: #ffffff;
+    background: #202b45;
+
+    font-family: "Inter", sans-serif;
+    font-size: 11px;
+    font-weight: 700;
+
+    cursor: pointer;
+    box-shadow: 0 3px 12px rgba(0, 0, 0, 0.18);
+    transition: background 0.2s, color 0.2s;
+}
+
+.contrast-toggle:hover {
+    color: #ffffff;
+    background: #303b59;
+}
+
+.contrast-toggle:focus-visible {
+    outline: 3px solid #e0a800;
+    outline-offset: 3px;
+}
+
+body.high-contrast .contrast-toggle {
+    color: #000000 !important;
+    background: #ffff00 !important;
+    border: 2px solid #ffffff !important;
+}
+
+@media (max-width: 650px) {
+    .contrast-toggle {
+        right: 12px !important;
+        bottom: 12px !important;
+    }
+}

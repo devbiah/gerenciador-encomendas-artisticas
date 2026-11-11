@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="pt-BR">
 
@@ -13,12 +14,22 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
           rel="stylesheet">
 
-    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=4">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=6">
 
     {% block styles %}{% endblock %}
 </head>
 
 <body>
+
+    <!-- BOTÃO DE ACESSIBILIDADE -->
+    <button
+        type="button"
+        id="contrast-toggle"
+        class="contrast-toggle"
+        aria-pressed="false"
+        aria-label="Ativar modo de alto contraste">
+        ◐ Alto contraste
+    </button>
 
     {% if request.endpoint and request.endpoint.startswith('auth.') %}
 
@@ -66,11 +77,12 @@
                     <h4>Precisa de ajuda?</h4>
                     <p>Organize suas artes e prazos em um só lugar.</p>
                 </div>
-<a href="{{ url_for('auth.logout') }}"
-   class="sidebar-logout">
-    <span class="nav-icon">↪</span>
-    <span>Sair</span>
-</a>
+
+                <a href="{{ url_for('auth.logout') }}" class="sidebar-logout">
+                    <span class="nav-icon">↪</span>
+                    <span>Sair</span>
+                </a>
+
             </aside>
 
             <main class="main-content">
@@ -91,6 +103,59 @@
         </div>
 
     {% endif %}
+
+    <!-- FUNCIONAMENTO DO ALTO CONTRASTE -->
+    <script>
+        (function () {
+            const botao = document.getElementById("contrast-toggle");
+
+            if (!botao) return;
+
+            function aplicarContraste(ativado) {
+                document.body.classList.toggle("high-contrast", ativado);
+
+                botao.setAttribute("aria-pressed", String(ativado));
+
+                botao.textContent = ativado
+                    ? "◐ Contraste ativado"
+                    : "◐ Alto contraste";
+
+                botao.setAttribute(
+                    "aria-label",
+                    ativado
+                        ? "Desativar modo de alto contraste"
+                        : "Ativar modo de alto contraste"
+                );
+            }
+
+            let contrasteSalvo = false;
+
+            try {
+                contrasteSalvo =
+                    localStorage.getItem("comissiona-alto-contraste") === "true";
+            } catch (erro) {
+                contrasteSalvo = false;
+            }
+
+            aplicarContraste(contrasteSalvo);
+
+            botao.addEventListener("click", function () {
+                const ativado =
+                    !document.body.classList.contains("high-contrast");
+
+                try {
+                    localStorage.setItem(
+                        "comissiona-alto-contraste",
+                        String(ativado)
+                    );
+                } catch (erro) {
+                    // O botão continua funcionando mesmo sem armazenamento.
+                }
+
+                aplicarContraste(ativado);
+            });
+        })();
+    </script>
 
     {% block scripts %}{% endblock %}
 
