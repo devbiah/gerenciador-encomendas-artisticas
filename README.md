@@ -73,6 +73,15 @@ python run.py
 http://127.0.0.1:5000
 ```
 
+## Organização dos módulos
+
+A aplicação está dividida em módulos com responsabilidades específicas:
+
+- **Models:** definem as entidades e o relacionamento entre os dados.
+- **Routes:** controlam as requisições e as operações do sistema.
+- **Templates:** armazenam as interfaces HTML.
+- **Static:** reúne os arquivos CSS e os arquivos de referência enviados pelos usuários.
+
 ## Status do projeto
 
 Em desenvolvimento.
@@ -80,3 +89,4 @@ Em desenvolvimento.
 ## Licença
 
 Projeto acadêmico sem licença de reutilização. Todos os direitos reservados à autora.
+
