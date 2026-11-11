@@ -25,6 +25,7 @@ except ModuleNotFoundError as erro:
 
 
 class TestesComissiona(unittest.TestCase):
+
     @classmethod
     def setUpClass(cls):
         cls.app = create_app()
@@ -34,6 +35,13 @@ class TestesComissiona(unittest.TestCase):
             SECRET_KEY="chave-temporaria-apenas-para-testes",
         )
         cls.client = cls.app.test_client()
+
+    @classmethod
+    def tearDownClass(cls):
+        # Fecha a conexao do SQLite em memoria ao terminar os testes.
+        with cls.app.app_context():
+            db.session.remove()
+            db.engine.dispose()
 
     def setUp(self):
         self.app_context = self.app.app_context()
@@ -75,7 +83,6 @@ class TestesComissiona(unittest.TestCase):
             tipo="Ilustracao",
             valor=Decimal(valor),
             status="Pendente",
-            referencias="https://exemplo.com/referencia.png",
             cliente_id=cliente.id,
             usuario_id=usuario.id,
         )
@@ -155,9 +162,10 @@ class TestesComissiona(unittest.TestCase):
         db.session.refresh(cliente)
         self.assertEqual(cliente.nome, "Maria Atualizada")
 
-        resposta_exclusao = self.client.post(f"/clientes/{cliente.id}/excluir")
+        cliente_id = cliente.id
+        resposta_exclusao = self.client.post(f"/clientes/{cliente_id}/excluir")
         self.assertEqual(resposta_exclusao.status_code, 302)
-        self.assertIsNone(db.session.get(Cliente, cliente.id))
+        self.assertIsNone(db.session.get(Cliente, cliente_id))
 
     def test_04_encomenda_cadastrar_editar_filtrar_e_excluir(self):
         usuario = self.criar_usuario()
@@ -172,39 +180,40 @@ class TestesComissiona(unittest.TestCase):
             "prazo": "",
             "valor": "150.00",
             "status": "Pendente",
-            "referencias": "https://exemplo.com/ref.png",
         })
         self.assertEqual(resposta.status_code, 302)
 
         encomenda = Encomenda.query.filter_by(titulo="Retrato inicial").first()
         self.assertIsNotNone(encomenda)
         self.assertEqual(encomenda.valor, Decimal("150.00"))
-        self.assertEqual(encomenda.referencias, "https://exemplo.com/ref.png")
 
         resposta_filtro = self.client.get("/encomendas?busca=Retrato")
         self.assertEqual(resposta_filtro.status_code, 200)
         self.assertIn(b"Retrato inicial", resposta_filtro.data)
 
-        resposta_edicao = self.client.post(f"/encomendas/{encomenda.id}", data={
-            "titulo": "Retrato atualizado",
-            "cliente_id": str(cliente.id),
-            "descricao": "Descricao alterada",
-            "tipo": "Completo",
-            "prazo": "",
-            "valor": "180.00",
-            "status": "Em andamento",
-            "referencias": "nova referencia",
-        })
+        resposta_edicao = self.client.post(
+            f"/encomendas/{encomenda.id}",
+            data={
+                "titulo": "Retrato atualizado",
+                "cliente_id": str(cliente.id),
+                "descricao": "Descricao alterada",
+                "tipo": "Completo",
+                "prazo": "",
+                "valor": "180.00",
+                "status": "Em andamento",
+            },
+        )
         self.assertEqual(resposta_edicao.status_code, 302)
         db.session.refresh(encomenda)
         self.assertEqual(encomenda.titulo, "Retrato atualizado")
         self.assertEqual(encomenda.valor, Decimal("180.00"))
 
+        encomenda_id = encomenda.id
         resposta_exclusao = self.client.post(
-            f"/encomendas/{encomenda.id}/excluir"
+            f"/encomendas/{encomenda_id}/excluir"
         )
         self.assertEqual(resposta_exclusao.status_code, 302)
-        self.assertIsNone(db.session.get(Encomenda, encomenda.id))
+        self.assertIsNone(db.session.get(Encomenda, encomenda_id))
 
     def test_05_pagamentos_parciais_somam_corretamente_na_encomenda(self):
         usuario = self.criar_usuario()
@@ -217,7 +226,6 @@ class TestesComissiona(unittest.TestCase):
 
         resposta = self.client.get(f"/encomendas/{encomenda.id}")
         self.assertEqual(resposta.status_code, 200)
-        self.assertIn(b"50.00", resposta.data)
         self.assertIn(b"50.00", resposta.data)
 
         resposta_lista = self.client.get("/encomendas")
@@ -239,9 +247,7 @@ class TestesComissiona(unittest.TestCase):
         self.assertIn(b"Ilustracao teste", resposta.data)
 
         totais = (
-            db.session.query(
-                func.sum(Pagamento.valor)
-            )
+            db.session.query(func.sum(Pagamento.valor))
             .filter_by(usuario_id=usuario.id)
             .scalar()
         )
@@ -302,6 +308,7 @@ class TestesComissiona(unittest.TestCase):
         cliente = self.criar_cliente(usuario)
         encomenda = self.criar_encomenda(usuario, cliente)
         pagamento = self.criar_pagamento(usuario, encomenda, "25.00", "Pago")
+        pagamento_id = pagamento.id
         self.logar_como(usuario)
 
         resposta = self.client.post(
@@ -309,10 +316,9 @@ class TestesComissiona(unittest.TestCase):
         )
         self.assertEqual(resposta.status_code, 302)
 
-        pagamento_preservado = db.session.get(Pagamento, pagamento.id)
+        pagamento_preservado = db.session.get(Pagamento, pagamento_id)
         self.assertIsNotNone(pagamento_preservado)
         self.assertEqual(pagamento_preservado.valor, Decimal("25.00"))
-
 
     def test_11_cadastrar_e_excluir_pagamento_pela_interface(self):
         usuario = self.criar_usuario()
