@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>{% block title %}Comissiona{% endblock %}</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+          rel="stylesheet">
+
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}?v=4">
+
+    {% block styles %}{% endblock %}
+</head>
+
+<body>
+
+    {% if request.endpoint and request.endpoint.startswith('auth.') %}
+
+        <main class="auth-layout">
+
+    {% else %}
+
+        <div class="app-container">
+
+            <aside class="sidebar">
+
+                <div class="sidebar-logo">
+                    <h2>comissiona.</h2>
+                    <span>PAINEL DO ARTISTA</span>
+                </div>
+
+                <nav class="sidebar-nav">
+
+                    <a href="{{ url_for('encomendas.listar_encomendas') }}"
+                       class="{% if request.endpoint and request.endpoint.startswith('encomendas.') %}active{% endif %}">
+                        <span class="nav-icon">▣</span>
+                        <span>Encomendas</span>
+                    </a>
+
+                    <a href="{{ url_for('clientes.listar_clientes') }}"
+                       class="{% if request.endpoint and request.endpoint.startswith('clientes.') %}active{% endif %}">
+                        <span class="nav-icon">♙</span>
+                        <span>Clientes</span>
+                    </a>
+
+                    <a href="{{ url_for('pagamentos.listar_pagamentos') }}"
+                       class="{% if request.endpoint and request.endpoint.startswith('pagamentos.') %}active{% endif %}">
+                        <span class="nav-icon">R$</span>
+                        <span>Pagamentos</span>
+                    </a>
+
+                    <span class="nav-disabled">
+                        <span class="nav-icon">⚙</span>
+                        <span>Configurações</span>
+                    </span>
+
+                </nav>
+
+                <div class="sidebar-help">
+                    <h4>Precisa de ajuda?</h4>
+                    <p>Organize suas artes e prazos em um só lugar.</p>
+                </div>
+<a href="{{ url_for('auth.logout') }}"
+   class="sidebar-logout">
+    <span class="nav-icon">↪</span>
+    <span>Sair</span>
+</a>
+            </aside>
+
+            <main class="main-content">
+                <section class="page-content">
+
+    {% endif %}
+
+    {% block content %}{% endblock %}
+
+    {% if request.endpoint and request.endpoint.startswith('auth.') %}
+
+        </main>
+
+    {% else %}
+
+                </section>
+            </main>
+        </div>
+
+    {% endif %}
+
+    {% block scripts %}{% endblock %}
+
+</body>
+</html>

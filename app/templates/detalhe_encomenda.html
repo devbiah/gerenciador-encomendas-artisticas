@@ -1,0 +1,880 @@
+
+{% extends "base.html" %}
+
+{% block title %}Detalhes da encomenda | Comissiona{% endblock %}
+
+{% block styles %}
+<style>
+    .detail-page {
+        width: 100%;
+        max-width: 1100px;
+    }
+
+    /* CABEÇALHO */
+
+    .detail-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 20px;
+        margin-bottom: 24px;
+    }
+
+    .detail-header h1 {
+        margin: 0 0 6px;
+        font-size: 25px;
+        font-weight: 700;
+        color: #293244;
+    }
+
+    .detail-header p {
+        margin: 0;
+        color: #7b8497;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    .detail-actions {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-shrink: 0;
+    }
+
+    .detail-actions a,
+    .detail-actions button {
+        margin: 0;
+    }
+
+    /* FORMULÁRIO */
+
+    #form-encomenda {
+        width: 100%;
+        max-width: none;
+        padding: 0;
+        margin: 0;
+        background: transparent;
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+    }
+
+    .detail-grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.7fr) minmax(280px, 1fr);
+        gap: 20px;
+        align-items: start;
+        width: 100%;
+    }
+
+    .detail-column {
+        display: flex;
+        flex-direction: column;
+        gap: 20px;
+        min-width: 0;
+    }
+
+    /* CARTÕES */
+
+    .detail-card {
+        min-width: 0;
+        padding: 22px;
+        border: 1px solid #e5e9f1;
+        border-radius: 10px;
+        background: #ffffff;
+        box-shadow: 0 2px 7px rgba(30, 42, 64, 0.03);
+    }
+
+    .detail-card h2 {
+        margin: 0 0 20px;
+        color: #202b45;
+        font-size: 15px;
+        font-weight: 600;
+    }
+
+    /* INFORMAÇÕES DO PEDIDO */
+
+    .detail-form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 17px;
+    }
+
+    .detail-field {
+        display: flex;
+        flex-direction: column;
+        gap: 7px;
+        min-width: 0;
+    }
+
+    .detail-field.full {
+        grid-column: 1 / -1;
+    }
+
+    .detail-field label {
+        color: #46516a;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .detail-field input,
+    .detail-field select,
+    .detail-field textarea {
+        width: 100%;
+        box-sizing: border-box;
+        margin: 0;
+        padding: 11px 12px;
+        border: 1px solid #dfe3eb;
+        border-radius: 6px;
+        color: #303b59;
+        background: #ffffff;
+        font-family: inherit;
+        font-size: 12px;
+        transition: border-color .2s, box-shadow .2s;
+    }
+
+    .detail-field input,
+    .detail-field select {
+        min-height: 40px;
+    }
+
+    .detail-field textarea {
+        min-height: 90px;
+        resize: vertical;
+        line-height: 1.5;
+    }
+
+    .detail-field input:focus,
+    .detail-field select:focus,
+    .detail-field textarea:focus {
+        outline: none;
+        border-color: #634ac4;
+        box-shadow: 0 0 0 3px rgba(99, 74, 196, .10);
+    }
+
+    .field-help {
+        color: #8991a2;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .reference-preview {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 12px;
+        margin-top: 12px;
+    }
+
+    .reference-preview img {
+        width: 100%;
+        height: 120px;
+        object-fit: cover;
+        border: 1px solid #e5e9f1;
+        border-radius: 7px;
+    }
+
+    /* ANDAMENTO */
+
+    .status-current {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        margin-top: 15px;
+        padding: 11px 12px;
+        border-radius: 7px;
+        background: #f5f6fa;
+        color: #46516a;
+        font-size: 12px;
+    }
+
+    .status-indicator {
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        flex-shrink: 0;
+        background: #d8dce5;
+    }
+
+    .status-indicator.pending {
+        background: #e5a43b;
+    }
+
+    .status-indicator.progress {
+        background: #634ac4;
+    }
+
+    .status-indicator.completed {
+        background: #35a875;
+    }
+
+    .progress-list {
+        display: flex;
+        flex-direction: column;
+        gap: 17px;
+        margin-top: 23px;
+    }
+
+    .progress-item {
+        display: flex;
+        align-items: center;
+        gap: 11px;
+        color: #8991a2;
+        font-size: 12px;
+    }
+
+    .progress-dot {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 17px;
+        height: 17px;
+        flex-shrink: 0;
+        border: 2px solid #d8dce5;
+        border-radius: 50%;
+        background: #ffffff;
+    }
+
+    .progress-dot.active {
+        border-color: #35a875;
+        background: #35a875;
+        box-shadow: 0 0 0 3px rgba(53, 168, 117, .12);
+    }
+
+    .progress-dot.active::after {
+        content: "";
+        width: 5px;
+        height: 5px;
+        border-radius: 50%;
+        background: #ffffff;
+    }
+
+    .progress-item.active {
+        color: #303b59;
+        font-weight: 600;
+    }
+
+    /* RESUMO FINANCEIRO */
+
+    .finance-item {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 12px;
+        padding: 12px 0;
+        border-bottom: 1px solid #edf0f4;
+        font-size: 12px;
+    }
+
+    .finance-item:first-child {
+        padding-top: 0;
+    }
+
+    .finance-item:last-of-type {
+        border-bottom: none;
+    }
+
+    .finance-label {
+        color: #7b8497;
+    }
+
+    .finance-value {
+        color: #202b45;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .finance-total {
+        color: #35a875;
+        font-size: 16px;
+    }
+
+    .finance-progress-area {
+        margin-top: 18px;
+        padding: 15px;
+        border-radius: 8px;
+        background: #f0f8f4;
+    }
+
+    .finance-progress-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 11px;
+    }
+
+    .finance-progress-label {
+        color: #53675d;
+        font-size: 12px;
+        font-weight: 600;
+    }
+
+    .finance-progress-percent {
+        color: #269565;
+        font-size: 13px;
+        font-weight: 700;
+    }
+
+    .finance-progress-track {
+        width: 100%;
+        height: 9px;
+        overflow: hidden;
+        border-radius: 20px;
+        background: #dcebe2;
+    }
+
+    .finance-progress-fill {
+        height: 100%;
+        border-radius: 20px;
+        background: #35a875;
+        transition: width .3s ease;
+    }
+
+    .finance-progress-caption {
+        display: block;
+        margin-top: 9px;
+        color: #7b8c82;
+        font-size: 11px;
+    }
+
+    /* PAGAMENTOS */
+
+    .payment-list {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+
+    .payment-item {
+        padding-bottom: 14px;
+        border-bottom: 1px solid #edf0f4;
+    }
+
+    .payment-item:last-child {
+        padding-bottom: 0;
+        border-bottom: none;
+    }
+
+    .payment-top {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+        margin-bottom: 7px;
+    }
+
+    .payment-amount {
+        color: #202b45;
+        font-size: 13px;
+        font-weight: 600;
+    }
+
+    .payment-meta {
+        color: #8991a2;
+        font-size: 11px;
+        line-height: 1.5;
+    }
+
+    .payment-status {
+        display: inline-block;
+        padding: 5px 9px;
+        border-radius: 20px;
+        color: #634ac4;
+        background: #f0edfb;
+        font-size: 10px;
+        font-weight: 600;
+        white-space: nowrap;
+    }
+
+    .empty-payments {
+        margin: 0;
+        padding: 15px;
+        border-radius: 7px;
+        color: #8991a2;
+        background: #f7f8fb;
+        font-size: 12px;
+        line-height: 1.6;
+    }
+
+    /* RODAPÉ DOS CARTÕES */
+
+    .detail-card-footer {
+        margin-top: 18px;
+    }
+
+    .detail-card-footer a {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 11px;
+        text-decoration: none;
+    }
+
+    /* BOTÃO EXCLUIR */
+
+    .detail-page .detail-actions button.btn-danger {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        min-height: 36px;
+        padding: 9px 13px;
+        margin: 0;
+        border: 1px solid #efcaca;
+        border-radius: 6px;
+        color: #c74747;
+        background: #fff1f1;
+        font-family: inherit;
+        font-size: 12px;
+        font-weight: 600;
+        cursor: pointer;
+        box-shadow: none;
+    }
+
+    .detail-page .detail-actions button.btn-danger:hover {
+        border-color: #c74747;
+        color: #ffffff;
+        background: #c74747;
+    }
+
+    /* RESPONSIVIDADE */
+
+    @media (max-width: 1050px) {
+        .detail-grid {
+            grid-template-columns: minmax(0, 1.4fr) minmax(260px, 1fr);
+        }
+    }
+
+    @media (max-width: 760px) {
+        .detail-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-header {
+            align-items: flex-start;
+            flex-direction: column;
+        }
+
+        .detail-actions {
+            width: 100%;
+            flex-wrap: wrap;
+        }
+
+        .detail-form-grid {
+            grid-template-columns: 1fr;
+        }
+
+        .detail-field.full {
+            grid-column: auto;
+        }
+    }
+
+    @media (max-width: 420px) {
+        .detail-card {
+            padding: 17px;
+        }
+    }
+    .reference-item {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    min-width: 0;
+}
+
+.reference-item a {
+    display: block;
+}
+
+.reference-item img {
+    display: block;
+    width: 100%;
+    height: 120px;
+    object-fit: cover;
+    border: 1px solid #e5e9f1;
+    border-radius: 7px;
+    transition: transform .2s, box-shadow .2s;
+}
+
+.reference-item img:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 42, 64, .12);
+}
+
+.reference-item .btn-danger {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #efcaca;
+    border-radius: 6px;
+    color: #c74747;
+    background: #fff1f1;
+    font-family: inherit;
+    font-size: 11px;
+    cursor: pointer;
+}
+
+.reference-item .btn-danger:hover {
+    color: white;
+    background: #c74747;
+}
+</style>
+{% endblock %}
+
+
+
+{% block content %}
+
+{% set percentual_pago = 0 %}
+
+{% if encomenda.valor and encomenda.valor > 0 %}
+    {% set percentual_pago = (total_pago / encomenda.valor) * 100 %}
+{% endif %}
+
+{% if percentual_pago > 100 %}
+    {% set percentual_pago = 100 %}
+{% endif %}
+
+<div class="detail-page">
+
+    <div class="detail-header">
+        <div>
+            <h1>Detalhes da encomenda</h1>
+            <p>Visualize e atualize as informações deste pedido.</p>
+        </div>
+
+        <div class="detail-actions">
+            <a href="{{ url_for('encomendas.listar_encomendas') }}"
+               class="btn-secondary">Voltar</a>
+
+            <button type="submit"
+                    form="form-excluir-encomenda"
+                    class="btn-danger">
+                Excluir encomenda
+            </button>
+
+            <button type="submit"
+                    form="form-encomenda"
+                    class="btn-primary">
+                Salvar alterações
+            </button>
+        </div>
+    </div>
+
+    <form id="form-encomenda"
+          method="POST"
+          enctype="multipart/form-data">
+
+        <div class="detail-grid">
+
+            <div class="detail-column">
+
+                <section class="detail-card">
+                    <h2>Informações do pedido</h2>
+
+                    <div class="detail-form-grid">
+
+                        <div class="detail-field full">
+                            <label for="titulo">Título do pedido</label>
+                            <input type="text"
+                                   id="titulo"
+                                   name="titulo"
+                                   value="{{ encomenda.titulo }}"
+                                   required>
+                        </div>
+
+                        <div class="detail-field">
+                            <label for="cliente_id">Cliente</label>
+                            <select id="cliente_id" name="cliente_id">
+                                <option value=""
+                                    {% if not encomenda.cliente_id %}selected{% endif %}>
+                                    Sem cliente vinculado
+                                </option>
+
+                                {% for cliente in clientes %}
+                                    <option value="{{ cliente.id }}"
+                                        {% if encomenda.cliente_id == cliente.id %}selected{% endif %}>
+                                        {{ cliente.nome }}
+                                    </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+
+                        <div class="detail-field">
+                            <label for="tipo">Tipo de trabalho</label>
+                            <input type="text"
+                                   id="tipo"
+                                   name="tipo"
+                                   value="{{ encomenda.tipo or '' }}">
+                        </div>
+
+                        <div class="detail-field">
+                            <label for="prazo">Prazo de entrega</label>
+                            <input type="date"
+                                   id="prazo"
+                                   name="prazo"
+                                   value="{{ encomenda.prazo.strftime('%Y-%m-%d') if encomenda.prazo else '' }}">
+                        </div>
+
+                        <div class="detail-field">
+                            <label for="valor">Valor total (R$)</label>
+                            <input type="number"
+                                   id="valor"
+                                   name="valor"
+                                   min="0.01"
+                                   step="0.01"
+                                   value="{{ '%.2f'|format(encomenda.valor) }}"
+                                   required>
+                        </div>
+
+                        <div class="detail-field full">
+                            <label for="imagens">Referências visuais</label>
+
+                            <input type="file"
+                                   id="imagens"
+                                   name="imagens"
+                                   accept="image/png,image/jpeg,image/gif,image/webp"
+                                   multiple>
+
+                            <span class="field-help">
+                                Você pode selecionar várias imagens. As imagens atuais serão mantidas.
+                            </span>
+
+                            {% if encomenda.arquivos_referencia %}
+                                <div class="reference-preview">
+
+                                    {% for arquivo in encomenda.arquivos_referencia %}
+                                        <div class="reference-item">
+
+                                            <a href="{{ url_for('static', filename='uploads/referencias/' ~ arquivo.nome_arquivo) }}"
+                                               target="_blank"
+                                               rel="noopener noreferrer"
+                                               title="Abrir imagem em tamanho original">
+
+                                                <img src="{{ url_for('static', filename='uploads/referencias/' ~ arquivo.nome_arquivo) }}"
+                                                     alt="{{ arquivo.nome_original or 'Imagem de referência' }}">
+                                            </a>
+
+                                            <span class="field-help">
+                                                {{ arquivo.nome_original or 'Imagem de referência' }}
+                                            </span>
+
+                                            <button type="submit"
+                                                    class="btn-danger"
+                                                    form="excluir-referencia-{{ arquivo.id }}"
+                                                    onclick="return confirm('Deseja excluir esta imagem?');">
+                                                Excluir imagem
+                                            </button>
+
+                                        </div>
+                                    {% endfor %}
+
+                                </div>
+                            {% else %}
+                                <span class="field-help">
+                                    Nenhuma imagem de referência cadastrada.
+                                </span>
+                            {% endif %}
+                        </div>
+
+                        <div class="detail-field full">
+                            <label for="observacoes">Observações</label>
+                            <textarea id="observacoes"
+                                      name="observacoes"
+                                      placeholder="Adicione instruções, detalhes ou informações importantes...">{{ encomenda.observacoes or '' }}</textarea>
+                        </div>
+
+                    </div>
+                </section>
+
+                <section class="detail-card">
+                    <h2>Resumo financeiro</h2>
+
+                    <div class="finance-item">
+                        <span class="finance-label">Valor da encomenda</span>
+                        <span class="finance-value">
+                            R$ {{ "%.2f"|format(encomenda.valor) }}
+                        </span>
+                    </div>
+
+                    <div class="finance-item">
+                        <span class="finance-label">Total recebido</span>
+                        <span class="finance-value">
+                            R$ {{ "%.2f"|format(total_pago) }}
+                        </span>
+                    </div>
+
+                    <div class="finance-item">
+                        <span class="finance-label">Saldo restante</span>
+                        <span class="finance-value finance-total">
+                            R$ {{ "%.2f"|format(saldo_restante) }}
+                        </span>
+                    </div>
+
+                    <div class="finance-progress-area">
+                        <div class="finance-progress-header">
+                            <span class="finance-progress-label">
+                                Progresso dos pagamentos
+                            </span>
+
+                            <span class="finance-progress-percent">
+                                {{ "%.0f"|format(percentual_pago) }}%
+                            </span>
+                        </div>
+
+                        <div class="finance-progress-track"
+                             role="progressbar"
+                             aria-label="Progresso dos pagamentos"
+                             aria-valuemin="0"
+                             aria-valuemax="100"
+                             aria-valuenow="{{ percentual_pago|int }}">
+
+                            <div class="finance-progress-fill"
+                                 style="width: {{ percentual_pago }}%">
+                            </div>
+                        </div>
+
+                        <span class="finance-progress-caption">
+                            R$ {{ "%.2f"|format(total_pago) }} de
+                            R$ {{ "%.2f"|format(encomenda.valor) }} recebidos
+                        </span>
+                    </div>
+
+                    <div class="detail-card-footer">
+                        <a href="{{ url_for('pagamentos.novo_pagamento') }}"
+                           class="btn-secondary">
+                            Registrar pagamento
+                        </a>
+                    </div>
+                </section>
+
+            </div>
+
+            <div class="detail-column">
+
+                <section class="detail-card">
+                    <h2>Andamento</h2>
+
+                    <div class="detail-field">
+                        <label for="status">Status atual</label>
+
+                        <select id="status" name="status">
+                            <option value="Pendente"
+                                {% if encomenda.status == 'Pendente' %}selected{% endif %}>
+                                Pendente
+                            </option>
+
+                            <option value="Em andamento"
+                                {% if encomenda.status == 'Em andamento' %}selected{% endif %}>
+                                Em andamento
+                            </option>
+
+                            <option value="Concluída"
+                                {% if encomenda.status == 'Concluída' %}selected{% endif %}>
+                                Concluída
+                            </option>
+                        </select>
+                    </div>
+
+                    <div class="status-current">
+                        {% if encomenda.status == 'Concluída' %}
+                            <span class="status-indicator completed"></span>
+                            Encomenda concluída
+                        {% elif encomenda.status == 'Em andamento' %}
+                            <span class="status-indicator progress"></span>
+                            Encomenda em andamento
+                        {% else %}
+                            <span class="status-indicator pending"></span>
+                            Aguardando início
+                        {% endif %}
+                    </div>
+
+                    <div class="progress-list">
+
+                        <div class="progress-item active">
+                            <span class="progress-dot active"></span>
+                            <span>Pedido cadastrado</span>
+                        </div>
+
+                        <div class="progress-item {% if encomenda.status in ['Em andamento', 'Concluída'] %}active{% endif %}">
+                            <span class="progress-dot {% if encomenda.status in ['Em andamento', 'Concluída'] %}active{% endif %}"></span>
+                            <span>Em andamento</span>
+                        </div>
+
+                        <div class="progress-item {% if encomenda.status == 'Concluída' %}active{% endif %}">
+                            <span class="progress-dot {% if encomenda.status == 'Concluída' %}active{% endif %}"></span>
+                            <span>Concluída</span>
+                        </div>
+
+                    </div>
+                </section>
+
+                <section class="detail-card">
+                    <h2>Histórico de pagamentos</h2>
+
+                    {% if encomenda.pagamentos %}
+                        <div class="payment-list">
+
+                            {% for pagamento in encomenda.pagamentos|sort(attribute='criado_em', reverse=True) %}
+                                <div class="payment-item">
+
+                                    <div class="payment-top">
+                                        <span class="payment-amount">
+                                            R$ {{ "%.2f"|format(pagamento.valor) }}
+                                        </span>
+
+                                        <span class="payment-status">
+                                            {{ pagamento.status }}
+                                        </span>
+                                    </div>
+
+                                    <div class="payment-meta">
+                                        {% if pagamento.data_pagamento %}
+                                            {{ pagamento.data_pagamento.strftime('%d/%m/%Y') }}
+                                        {% else %}
+                                            Data não informada
+                                        {% endif %}
+
+                                        {% if pagamento.forma_pagamento %}
+                                            · {{ pagamento.forma_pagamento }}
+                                        {% endif %}
+                                    </div>
+
+                                </div>
+                            {% endfor %}
+
+                        </div>
+                    {% else %}
+                        <p class="empty-payments">
+                            Nenhum pagamento foi registrado para esta encomenda.
+                        </p>
+                    {% endif %}
+
+                    <div class="detail-card-footer">
+                        <a href="{{ url_for('pagamentos.listar_pagamentos') }}"
+                           class="btn-secondary">
+                            Ver todos os pagamentos
+                        </a>
+                    </div>
+                </section>
+
+            </div>
+
+        </div>
+    </form>
+
+    <!-- Formulário de exclusão da encomenda -->
+    <form id="form-excluir-encomenda"
+          method="POST"
+          action="{{ url_for('encomendas.excluir_encomenda', id=encomenda.id) }}"
+          onsubmit="return confirm('Tem certeza de que deseja excluir esta encomenda?');">
+    </form>
+
+    <!-- Formulários separados para excluir cada imagem -->
+    {% for arquivo in encomenda.arquivos_referencia %}
+        <form id="excluir-referencia-{{ arquivo.id }}"
+              method="POST"
+              action="{{ url_for('encomendas.excluir_referencia', id=encomenda.id, arquivo_id=arquivo.id) }}">
+        </form>
+    {% endfor %}
+
+</div>
+
+{% endblock %}

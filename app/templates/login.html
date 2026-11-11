@@ -1,0 +1,99 @@
+
+{% extends "base.html" %}
+
+{% block title %}Entrar | Comissiona{% endblock %}
+
+{% block content %}
+
+<section class="auth-left">
+
+    <div class="auth-brand">comissiona.</div>
+
+    <div class="auth-presentation">
+        <h2>Sua arte, seus prazos,<br>tudo organizado.</h2>
+
+        <p>
+            Gerencie encomendas, referências e pagamentos
+            sem perder informações entre plataformas.
+        </p>
+
+        <div class="auth-work-card">
+    <span class="auth-work-status">SEU ESPAÇO CRIATIVO</span>
+
+    <h3 id="data-atual">Carregando data...</h3>
+
+    <p>
+        Um novo dia para organizar suas ideias,
+        acompanhar seus projetos e cuidar das suas encomendas.
+    </p>
+
+    
+    </div>
+
+</section>
+
+<section class="auth-right">
+
+    <div class="auth-form-container">
+
+        <h1>Entrar na sua conta</h1>
+        <p class="auth-description">
+            Acesse seu painel de encomendas artísticas.
+        </p>
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensagem in mensagens %}
+                <div class="auth-message {{ categoria }}">
+                    {{ mensagem }}
+                </div>
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input type="email" id="email" name="email"
+                       placeholder="seuemail@exemplo.com" required>
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input type="password" id="senha" name="senha"
+                       placeholder="Digite sua senha" required>
+            </div>
+
+            <button type="submit" class="auth-button">
+                Entrar
+            </button>
+
+        </form>
+
+        <p class="auth-note">
+            Protótipo acadêmico: autenticação ilustrativa.
+        </p>
+
+        <p class="auth-footer">
+            Ainda não tem uma conta?
+            <a href="{{ url_for('auth.cadastro') }}">Criar conta</a>
+        </p>
+
+    </div>
+
+</section>
+<script>
+    const dataAtual = document.getElementById("data-atual");
+
+    const hoje = new Date();
+
+    const dataFormatada = new Intl.DateTimeFormat("pt-BR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    }).format(hoje);
+
+    dataAtual.textContent =
+        dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
+</script>
+{% endblock %}

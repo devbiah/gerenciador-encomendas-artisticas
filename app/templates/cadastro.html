@@ -1,0 +1,146 @@
+{% extends "base.html" %}
+
+{% block title %}Criar conta | Comissiona{% endblock %}
+
+{% block content %}
+
+<section class="auth-left">
+
+    <div class="auth-brand">comissiona.</div>
+
+    <div class="auth-presentation">
+        <h2>Sua arte, seus prazos,<br>tudo organizado.</h2>
+
+        <p>
+            Gerencie encomendas, referências e pagamentos
+            sem perder informações entre plataformas.
+        </p>
+
+         <div class="auth-work-card">
+    <span class="auth-work-status">SEU ESPAÇO CRIATIVO</span>
+
+    <h3 id="data-atual">Carregando data...</h3>
+
+    <p>
+        Um novo dia para organizar suas ideias,
+        acompanhar seus projetos e cuidar das suas encomendas.
+    </p>
+
+    
+    </div>
+    </div>
+
+</section>
+
+<section class="auth-right">
+
+    <div class="auth-form-container">
+
+        <h1>Crie sua conta</h1>
+
+        <p class="auth-description">
+            Comece a organizar suas encomendas artísticas.
+        </p>
+
+        {% with mensagens = get_flashed_messages(with_categories=true) %}
+            {% for categoria, mensagem in mensagens %}
+
+                {% if categoria == "senha" %}
+                    <div class="senha-aviso">
+                        <p class="senha-aviso-titulo">
+                            Sua senha ainda precisa atender aos seguintes requisitos:
+                        </p>
+
+                        <ul class="senha-lista">
+                            {% for requisito in mensagem.split("||") %}
+                                <li>{{ requisito }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% else %}
+                    <div class="auth-message {{ categoria }}">
+                        {{ mensagem }}
+                    </div>
+                {% endif %}
+
+            {% endfor %}
+        {% endwith %}
+
+        <form method="POST">
+
+            <div class="form-group">
+                <label for="nome">Nome</label>
+                <input
+                    type="text"
+                    id="nome"
+                    name="nome"
+                    placeholder="Seu nome"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail</label>
+                <input
+                    type="email"
+                    id="email"
+                    name="email"
+                    placeholder="seuemail@exemplo.com"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="senha">Senha</label>
+                <input
+                    type="password"
+                    id="senha"
+                    name="senha"
+                    placeholder="Crie uma senha"
+                    minlength="8"
+                    required
+                >
+            </div>
+
+            <div class="form-group">
+                <label for="confirmar_senha">Confirmar senha</label>
+                <input
+                    type="password"
+                    id="confirmar_senha"
+                    name="confirmar_senha"
+                    placeholder="Digite a senha novamente"
+                    minlength="8"
+                    required
+                >
+            </div>
+
+            <button type="submit" class="auth-button">
+                Criar conta
+            </button>
+
+        </form>
+
+        <p class="auth-footer">
+            Já possui uma conta?
+            <a href="{{ url_for('auth.login') }}">Fazer login</a>
+        </p>
+
+    </div>
+
+</section>
+<script>
+    const dataAtual = document.getElementById("data-atual");
+
+    const hoje = new Date();
+
+    const dataFormatada = new Intl.DateTimeFormat("pt-BR", {
+        weekday: "long",
+        day: "numeric",
+        month: "long",
+        year: "numeric"
+    }).format(hoje);
+
+    dataAtual.textContent =
+        dataFormatada.charAt(0).toUpperCase() + dataFormatada.slice(1);
+</script>
+{% endblock %}

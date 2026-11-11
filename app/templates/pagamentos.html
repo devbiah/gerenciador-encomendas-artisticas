@@ -1,0 +1,123 @@
+
+{% extends "base.html" %}
+
+{% block title %}Pagamentos | Comissiona{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Pagamentos</h1>
+        <p>Consulte e acompanhe os pagamentos das suas encomendas.</p>
+    </div>
+
+    <a href="{{ url_for('pagamentos.novo_pagamento') }}" class="btn-primary">
+        + Novo pagamento
+    </a>
+</div>
+
+<!-- Resumo financeiro -->
+<div class="stats-grid">
+
+    <div class="stat-card">
+        <p>Total recebido</p>
+        <h2>R$ {{ "%.2f"|format(total_recebido) }}</h2>
+        <span>Pagamentos confirmados</span>
+    </div>
+
+    <div class="stat-card">
+        <p>A receber</p>
+        <h2>R$ {{ "%.2f"|format(total_pendente) }}</h2>
+        <span>Pagamentos pendentes</span>
+    </div>
+
+    <div class="stat-card">
+        <p>Total movimentado</p>
+        <h2>R$ {{ "%.2f"|format(total_geral) }}</h2>
+        <span>Todos os pagamentos cadastrados</span>
+    </div>
+
+</div>
+
+<!-- Histórico -->
+<div class="content-card">
+
+    <div class="section-header">
+        <h2>Histórico de pagamentos</h2>
+        <span>{{ pagamentos|length }} pagamento(s)</span>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Cliente / Encomenda</th>
+                    <th>Data</th>
+                    <th>Valor</th>
+                    <th>Forma de pagamento</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for pagamento in pagamentos %}
+                <tr>
+                    <td>
+    <strong>
+        {{ pagamento.cliente_nome or 'Cliente não identificado' }}
+    </strong>
+    <br>
+    <span class="table-secondary">
+        {{ pagamento.encomenda_titulo or 'Encomenda não identificada' }}
+    </span>
+</td>
+
+                    <td>
+                        {{ pagamento.data_pagamento.strftime('%d/%m/%Y') if pagamento.data_pagamento else 'Não informada' }}
+                    </td>
+
+                    <td>
+                        R$ {{ "%.2f"|format(pagamento.valor) }}
+                    </td>
+
+                    <td>
+                        {{ pagamento.forma_pagamento or 'Não informada' }}
+                    </td>
+
+                    <td>
+                        {% set status = pagamento.status|lower %}
+                        <span class="status-badge
+                            {% if status == 'pago' %}status-paid
+                            {% elif status == 'pendente' %}status-pending
+                            {% else %}status-progress{% endif %}">
+                            {{ pagamento.status }}
+                        </span>
+                        
+                    </td>
+                  <td>
+    <div class="table-actions">
+        <form method="POST"
+              action="{{ url_for('pagamentos.excluir_pagamento', id=pagamento.id) }}"
+              onsubmit="return confirm('Tem certeza de que deseja excluir este pagamento?');">
+
+            <button type="submit" class="btn-danger">
+                Excluir
+            </button>
+
+        </form>
+    </div>
+</td>
+                </tr>
+                {% else %}
+                <tr>
+<td colspan="6">Nenhum pagamento cadastrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

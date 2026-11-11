@@ -1,0 +1,81 @@
+
+{% extends "base.html" %}
+
+{% block title %}Novo pagamento | Comissiona{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Novo pagamento</h1>
+        <p>Registre um pagamento de uma encomenda.</p>
+    </div>
+</div>
+
+<div class="content-card form-card">
+
+    <form method="POST">
+
+        <div class="form-group">
+            <label for="encomenda_id">Encomenda</label>
+            <select id="encomenda_id" name="encomenda_id" required>
+                <option value="">Selecione uma encomenda</option>
+                {% for encomenda in encomendas %}
+                    <option value="{{ encomenda.id }}">
+                        {{ encomenda.titulo }} — {{ encomenda.cliente.nome }}
+                    </option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="valor">Valor (R$)</label>
+            <input type="number" id="valor" name="valor"
+                   min="0.01" step="0.01" placeholder="150,00" required>
+        </div>
+
+        <div class="form-group">
+            <label for="data_pagamento">Data do pagamento</label>
+            <input type="date" id="data_pagamento" name="data_pagamento">
+        </div>
+
+        <div class="form-group">
+            <label for="forma_pagamento">Forma de pagamento</label>
+            <select id="forma_pagamento" name="forma_pagamento">
+                <option value="">Selecione</option>
+                <option value="PayPal">PayPal</option>
+                <option value="PIX">PIX</option>
+                <option value="Transferência bancária">Transferência bancária</option>
+                <option value="Outro">Outro</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="status">Status</label>
+            <select id="status" name="status">
+                <option value="Pendente">Pendente</option>
+                <option value="Pago">Pago</option>
+                <option value="Parcial">Parcial</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="observacoes">Observações</label>
+            <textarea id="observacoes" name="observacoes"
+                      placeholder="Informações adicionais sobre o pagamento"></textarea>
+        </div>
+
+        <div class="form-actions">
+            <a href="{{ url_for('pagamentos.listar_pagamentos') }}" class="btn-secondary">
+                Cancelar
+            </a>
+            <button type="submit" class="btn-primary">
+                Salvar pagamento
+            </button>
+        </div>
+
+    </form>
+
+</div>
+
+{% endblock %}

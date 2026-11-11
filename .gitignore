@@ -234,3 +234,12 @@ __marimo__/
 
 # Streamlit
 .streamlit/secrets.toml
+
+# Banco de dados local
+*.db
+*.sqlite
+*.sqlite3
+
+# Uploads de testes
+app/static/uploads/referencias/*
+!app/static/uploads/referencias/.gitkeep

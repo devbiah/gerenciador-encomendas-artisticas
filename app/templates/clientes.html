@@ -1,0 +1,76 @@
+{% extends "base.html" %}
+
+{% block title %}Clientes | Gerenciador de Encomendas{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <h1>Clientes</h1>
+    <p>Consulte e gerencie os clientes cadastrados.</p>
+</div>
+
+<div class="content-card">
+
+    <div class="section-header">
+        <h2>Lista de clientes</h2>
+
+        <a href="{{ url_for('clientes.novo_cliente') }}" class="btn-primary">
+            + Novo cliente
+        </a>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Nome</th>
+                    <th>E-mail</th>
+                    <th>Telefone</th>
+                    <th>Observações</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for cliente in clientes %}
+                <tr>
+                    <td>{{ cliente.nome }}</td>
+                    <td>{{ cliente.email }}</td>
+                    <td>{{ cliente.telefone or 'Não informado' }}</td>
+                    
+                    <td>{{ cliente.observacoes or '—' }}</td>
+                
+    <td>
+    <div class="table-actions">
+        <a
+            href="{{ url_for('clientes.editar_cliente', id=cliente.id) }}"
+            class="btn-secondary btn-table-action"
+        >
+            Editar
+        </a>
+
+        <form
+            method="POST"
+            class="table-action-form"
+            action="{{ url_for('clientes.excluir_cliente', id=cliente.id) }}"
+            onsubmit="return confirm('Tem certeza de que deseja excluir este cliente?');"
+        >
+            <button type="submit" class="btn-danger btn-table-action">
+                Excluir
+            </button>
+        </form>
+    </div>
+</td>
+                </tr>
+                {% else %}
+                <tr>
+                    <td colspan="5">Nenhum cliente cadastrado.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+{% endblock %}

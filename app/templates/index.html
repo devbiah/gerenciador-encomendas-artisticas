@@ -1,12 +1,35 @@
-<!DOCTYPE html>
-<html lang="pt-BR">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gerenciador de Encomendas Artísticas</title>
-</head>
-<body>
-    <h1>Gerenciador de Encomendas Artísticas</h1>
-    <p>Sistema em desenvolvimento.</p>
-</body>
-</html>
+
+{% extends "base.html" %}
+
+{% block title %}Início | Gerenciador de Encomendas{% endblock %}
+
+{% block content %}
+
+    <div class="page-header">
+        <h1>Visão geral</h1>
+        <p>Organize seus clientes, encomendas e pagamentos.</p>
+    </div>
+
+    <div class="dashboard-cards">
+
+        <div class="dashboard-card">
+            <h3>Clientes</h3>
+            <p>Consulte e gerencie seus clientes cadastrados.</p>
+            <a href="{{ url_for('clientes.listar_clientes') }}">Acessar clientes</a>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Encomendas</h3>
+            <p>Acompanhe suas encomendas e respectivos prazos.</p>
+            <a href="{{ url_for('encomendas.listar_encomendas') }}">Acessar encomendas</a>
+        </div>
+
+        <div class="dashboard-card">
+            <h3>Pagamentos</h3>
+            <p>Consulte os pagamentos registrados.</p>
+            <a href="{{ url_for('pagamentos.listar_pagamentos') }}">Acessar pagamentos</a>
+        </div>
+
+    </div>
+
+{% endblock %}

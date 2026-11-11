@@ -1,0 +1,214 @@
+
+{% extends "base.html" %}
+
+{% block title %}Encomendas | Comissiona{% endblock %}
+
+{% block content %}
+
+<div class="page-header">
+    <div>
+        <h1>Encomendas</h1>
+        <p>Acompanhe pedidos, prazos e pagamentos em um só lugar.</p>
+    </div>
+
+    <a href="{{ url_for('encomendas.nova_encomenda') }}" class="btn-primary">
+        + Nova encomenda
+    </a>
+</div>
+
+<form method="GET" class="filter-bar">
+    <input
+        type="search"
+        name="busca"
+        value="{{ busca }}"
+        placeholder="⌕ Buscar por cliente ou encomenda..."
+        aria-label="Buscar encomenda"
+    >
+
+    <select name="status" aria-label="Filtrar por status">
+        <option value="">Todos os status</option>
+        <option value="Pendente" {% if status_filtro == "Pendente" %}selected{% endif %}>Pendente</option>
+        <option value="Em andamento" {% if status_filtro == "Em andamento" %}selected{% endif %}>Em andamento</option>
+        <option value="Concluída" {% if status_filtro == "Concluída" %}selected{% endif %}>Concluída</option>
+    </select>
+
+    <select name="prazo" aria-label="Filtrar por prazo">
+        <option value="">Qualquer prazo</option>
+        <option value="atrasadas" {% if prazo_filtro == "atrasadas" %}selected{% endif %}>Atrasadas</option>
+        <option value="proximos7" {% if prazo_filtro == "proximos7" %}selected{% endif %}>Próximos 7 dias</option>
+        <option value="sem_prazo" {% if prazo_filtro == "sem_prazo" %}selected{% endif %}>Sem prazo definido</option>
+    </select>
+
+    <button type="submit" class="btn-primary">Filtrar</button>
+</form>
+
+<div class="stats-grid">
+    <div class="stat-card">
+        <span>Total de encomendas</span>
+        <strong>{{ total }}</strong>
+        <small>Todos os pedidos</small>
+    </div>
+
+    <div class="stat-card">
+        <span>Em andamento</span>
+        <strong>{{ em_andamento }}</strong>
+        <small>Em produção</small>
+    </div>
+
+    <div class="stat-card">
+        <span>Aguardando pagamento</span>
+        <strong>{{ aguardando_pagamento }}</strong>
+        <small>Com saldo pendente ou sem pagamento</small>
+    </div>
+</div>
+
+<div class="content-card orders-card">
+
+    <div class="section-header">
+        <h2>Pedidos recentes</h2>
+    </div>
+
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Cliente / Pedido</th>
+                    <th>Prazo</th>
+                    <th>Tempo restante</th>
+                    <th>Valor</th>
+                    <th>Já pago</th>
+                    <th>Status</th>
+                    <th>Referências</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+
+            <tbody>
+                {% for encomenda in encomendas %}
+                <tr>
+                    <td>
+                        <strong>
+                            {{ encomenda.cliente.nome if encomenda.cliente else 'Cliente excluído' }}
+                        </strong>
+
+                        <span class="table-secondary order-title">
+                            {{ encomenda.titulo }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {{ encomenda.prazo.strftime('%d/%m/%Y') if encomenda.prazo else 'Não definido' }}
+                    </td>
+
+                    <td>
+                        {% if encomenda.status|lower == 'concluída' %}
+                            <span class="status-badge status-concluida">
+                                Finalizada
+                            </span>
+
+                        {% elif encomenda.prazo %}
+                            {% set data_prazo = encomenda.prazo.date() if encomenda.prazo.__class__.__name__ == 'datetime' else encomenda.prazo %}
+                            {% set dias_restantes = (data_prazo - hoje).days %}
+
+                            {% if dias_restantes < 0 %}
+                                <span class="status-badge status-pendente">
+                                    Atrasada há {{ dias_restantes|abs }} dia(s)
+                                </span>
+
+                            {% elif dias_restantes == 0 %}
+                                <span class="status-badge status-pendente">
+                                    Entrega hoje!
+                                </span>
+
+                            {% elif dias_restantes <= 3 %}
+                                <span class="status-badge status-pendente">
+                                    {{ dias_restantes }} dia(s) restante(s)
+                                </span>
+
+                            {% elif dias_restantes <= 7 %}
+                                <span class="status-badge status-andamento">
+                                    {{ dias_restantes }} dias restantes
+                                </span>
+
+                            {% else %}
+                                <span class="status-badge status-concluida">
+                                    {{ dias_restantes }} dias restantes
+                                </span>
+                            {% endif %}
+
+                        {% else %}
+                            <span class="table-secondary">
+                                Sem prazo
+                            </span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        R$ {{ "%.2f"|format(encomenda.valor) }}
+                    </td>
+
+                    <td>
+                        R$ {{ "%.2f"|format(encomenda.total_pago) }}
+                    </td>
+
+                    <td>
+                        <span class="status-badge status-{{ encomenda.status|lower|replace(' ', '-') }}">
+                            {{ encomenda.status }}
+                        </span>
+                    </td>
+
+                    <td>
+                        {% if encomenda.arquivos_referencia %}
+                            <div class="reference-preview">
+                                {% for arquivo in encomenda.arquivos_referencia[:3] %}
+                                    <a
+                                        href="{{ url_for('static', filename='uploads/referencias/' ~ arquivo.nome_arquivo) }}"
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        title="{{ arquivo.nome_original or 'Abrir referência' }}"
+                                    >
+                                        <img
+                                            src="{{ url_for('static', filename='uploads/referencias/' ~ arquivo.nome_arquivo) }}"
+                                            alt="Referência da encomenda"
+                                            loading="lazy"
+                                        >
+                                    </a>
+                                {% endfor %}
+
+                                {% if encomenda.arquivos_referencia|length > 3 %}
+                                    <span class="reference-count">
+                                        +{{ encomenda.arquivos_referencia|length - 3 }}
+                                    </span>
+                                {% endif %}
+                            </div>
+                        {% else %}
+                            <span class="no-references">—</span>
+                        {% endif %}
+                    </td>
+
+                    <td>
+                        <a
+                            href="{{ url_for('encomendas.detalhe_encomenda', id=encomenda.id) }}"
+                            class="btn-secondary"
+                        >
+                            Ver detalhes
+                        </a>
+                    </td>
+                </tr>
+
+                {% else %}
+                <tr>
+                    <td colspan="8">Nenhuma encomenda encontrada.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+    <p class="table-footer">
+        Exibindo {{ encomendas|length }} encomenda(s) encontrada(s).
+    </p>
+
+</div>
+
+{% endblock %}
